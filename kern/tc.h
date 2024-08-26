@@ -211,7 +211,7 @@ static __always_inline int capture_packets(struct __sk_buff *skb, bool is_ingres
                                  l4_hdr_off + sizeof(struct tcphdr))) {
             return TC_ACT_OK;
         }
-        // debug_bpf_printk("!!!capture_packets src_ip4 : %d, dst_ip4 port :%d\n", conn_id.src_ip4, conn_id.dst_ip4);
+        // debug_bpf_printk("!!!capture_packets src_ip4: %d, dst_ip4 port: %d\n", conn_id.src_ip4, conn_id.dst_ip4);
         struct tcphdr *tcp = (struct tcphdr *)(data_start + l4_hdr_off);
 
 #ifndef KERNEL_LESS_5_2
@@ -221,7 +221,7 @@ static __always_inline int capture_packets(struct __sk_buff *skb, bool is_ingres
 
         conn_id.src_port = bpf_ntohs(tcp->source);
         conn_id.dst_port = bpf_ntohs(tcp->dest);
-        // debug_bpf_printk("!!!capture_packets port : %d, dest port :%d\n", conn_id.src_port, conn_id.dst_port);
+        // debug_bpf_printk("!!!capture_packets port: %d, dest port: %d\n", conn_id.src_port, conn_id.dst_port);
         net_ctx = bpf_map_lookup_elem(&network_map, &conn_id);
         if (net_ctx == NULL) {
             // exchange src and dst
@@ -250,7 +250,7 @@ static __always_inline int capture_packets(struct __sk_buff *skb, bool is_ingres
 #endif
         event.pid = net_ctx->pid;
         __builtin_memcpy(event.comm, net_ctx->comm, TASK_COMM_LEN);
-        debug_bpf_printk("capture packet process found, pid: %d, comm :%s\n", event.pid, event.comm);
+        debug_bpf_printk("capture packet process found, pid: %d, comm: %s\n", event.pid, event.comm);
     }
 
     event.ts = bpf_ktime_get_ns();
@@ -271,7 +271,7 @@ static __always_inline int capture_packets(struct __sk_buff *skb, bool is_ingres
     bpf_perf_event_output(skb, &skb_events, flags, &event, pkt_size);
 
     //    debug_bpf_printk("new packet captured on egress/ingress (TC),
-    //    length:%d\n", data_len);
+    //    length: %d\n", data_len);
     return TC_ACT_OK;
 }
 
@@ -341,7 +341,7 @@ int tcp_sendmsg(struct pt_regs *ctx){
     net_ctx.uid = uid;
     bpf_get_current_comm(&net_ctx.comm, sizeof(net_ctx.comm));
 
-    debug_bpf_printk("tcp_sendmsg pid : %d, comm :%s\n", net_ctx.pid, net_ctx.comm);
+    debug_bpf_printk("tcp_sendmsg pid: %d, comm: %s\n", net_ctx.pid, net_ctx.comm);
     bpf_map_update_elem(&network_map, &conn_id, &net_ctx, BPF_ANY);
     return 0;
 };
