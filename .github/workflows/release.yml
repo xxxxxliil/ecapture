@@ -19,6 +19,7 @@ jobs:
           sudo apt-get update
           kernel_ver=`uname -r | cut -d'-' -f 1`
           sudo apt-get install --yes build-essential pkgconf libelf-dev llvm clang linux-tools-common linux-tools-generic gcc gcc-aarch64-linux-gnu linux-source-${kernel_ver}
+          echo '..................unless op begin'
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
@@ -28,13 +29,15 @@ jobs:
             sudo ln -s /usr/bin/$tool-14 /usr/bin/$tool
           done
           set +x
+          echo '..................unless op end'
           # cd /usr/src
           # sudo tar -xf linux-source-${kernel_ver}.tar.bz2
           # cd /usr/src/linux-source-${kernel_ver}
           tar -xf /usr/src/linux-source-${kernel_ver}.tar.bz2
           cd linux-source-${kernel_ver}
-          test -f .config || make oldconfig
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
+          test -f .config || yes '' | make oldconfig
+          echo ?!
+          yes '' | make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
           ls -ahl
         shell: bash
       - uses: actions/checkout@v4
@@ -46,11 +49,11 @@ jobs:
           gh auth login --with-token <<<'${{ secrets.GITHUB_TOKEN }}'
       - name: Release amd64
         run: |
-          kernel_ver=`uname -r | cut -d'-' -f 1`
-          find -name kconfig.h
           make clean
-          make env KERN_SRC_PATH=linux-source-${kernel_ver}
-          make -f builder/Makefile.release release KERN_SRC_PATH=linux-source-${kernel_ver} SNAPSHOT_VERSION=${{ github.ref_name }}
+          make env
+          find -name kconfig.h
+          echo ...??!!!
+          make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
           kernel_ver=`uname -r | cut -d'-' -f 1`
