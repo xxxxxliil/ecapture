@@ -33,6 +33,7 @@ jobs:
           mkdir kern-src
           tar -xf $source_file -C kern-src
           cd kern-src
+          ls -ahl
           test -f .config || make oldconfig
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
           ls -al ./
