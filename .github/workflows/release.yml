@@ -18,6 +18,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes build-essential pkgconf libelf-dev llvm clang linux-tools-common linux-tools-generic gcc gcc-aarch64-linux-gnu linux-source
+          echo '..................unless op begin'
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
@@ -27,6 +28,7 @@ jobs:
             sudo ln -s /usr/bin/$tool-14 /usr/bin/$tool
           done
           set +x
+          echo '..................unless op end'
           #cd /usr/src
           source_file=$(find /usr/src -maxdepth 1 -name "*linux-source*.tar.bz2")
           source_dir=$(echo "$source_file" | sed 's/\.tar\.bz2//g')  
@@ -35,8 +37,9 @@ jobs:
           tar -xf $source_file -C kern-src
           cd kern-src
           ls -ahl
-          test -f .config || make oldconfig
-          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
+          test -f .config || yes '' | make oldconfig
+          echo ?!
+          yes '' | make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
           ls -ahl
         shell: bash
       - uses: actions/checkout@v4
@@ -48,17 +51,15 @@ jobs:
           gh auth login --with-token <<<'${{ secrets.GITHUB_TOKEN }}'
       - name: Release amd64
         run: |
-          kernel_ver=`uname -r | cut -d'-' -f 1`
-          find -name kconfig.h
           make clean
-          make env KERN_SRC_PATH=linux-source-${kernel_ver}
-          make -f builder/Makefile.release release KERN_SRC_PATH=linux-source-${kernel_ver} SNAPSHOT_VERSION=${{ github.ref_name }}
+          make env KERN_SRC_PATH=linux-source-*
+          echo ...??!!!
+          make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-*" SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
-          kernel_ver=`uname -r | cut -d'-' -f 1`
           make clean
-          make env KERN_SRC_PATH=linux-source-${kernel_ver}
-          CROSS_ARCH=arm64 make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-${kernel_ver}" SNAPSHOT_VERSION=${{ github.ref_name }}
+          make env KERN_SRC_PATH=linux-source-*
+          CROSS_ARCH=arm64 make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-*" SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Publish
         run: |
           make -f builder/Makefile.release publish SNAPSHOT_VERSION=${{ github.ref_name }}
