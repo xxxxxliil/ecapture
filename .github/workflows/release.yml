@@ -22,6 +22,7 @@ jobs:
           for tool in "clang" "llc" "llvm-strip"
           do
             type $tool && $tool --version || echo 'none?'
+            [ -f /usr/bin/$tool-14 ] && ls -ahl /usr/bin/$tool-14
             sudo rm -f /usr/bin/$tool
             sudo ln -s /usr/bin/$tool-14 /usr/bin/$tool
           done
@@ -48,14 +49,16 @@ jobs:
           gh auth login --with-token <<<'${{ secrets.GITHUB_TOKEN }}'
       - name: Release amd64
         run: |
+          kernel_ver=`uname -r | cut -d'-' -f 1`
           make clean
           make env
-          make -f builder/Makefile.release release KERN_SRC_PATH='kern-src' SNAPSHOT_VERSION=${{ github.ref_name }}
+          make -f builder/Makefile.release release KERN_SRC_PATH=linux-source-${kernel_ver} SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
+          kernel_ver=`uname -r | cut -d'-' -f 1`
           make clean
           make env
-          CROSS_ARCH=arm64 make -f builder/Makefile.release release KERN_SRC_PATH='kern-src' SNAPSHOT_VERSION=${{ github.ref_name }}
+          CROSS_ARCH=arm64 make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-${kernel_ver}" SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Publish
         run: |
           make -f builder/Makefile.release publish SNAPSHOT_VERSION=${{ github.ref_name }}
