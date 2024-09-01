@@ -21,7 +21,7 @@ jobs:
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
-            $tool --version
+            type $tool && $tool --version || echo 'none?'
             sudo rm -f /usr/bin/$tool
             sudo ln -s /usr/bin/$tool-14 /usr/bin/$tool
           done
