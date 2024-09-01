@@ -22,7 +22,7 @@ jobs:
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
-            type $tool && $tool --version || echo 'none?'
+            type $tool && $tool --version && ls -ahl /usr/bin/$tool || echo 'none?'
             [ -f /usr/bin/$tool-14 ] && ls -ahl /usr/bin/$tool-14
             sudo rm -f /usr/bin/$tool
             sudo ln -s /usr/bin/$tool-14 /usr/bin/$tool
@@ -31,14 +31,11 @@ jobs:
           # cd /usr/src
           # sudo tar -xf linux-source-${kernel_ver}.tar.bz2
           # cd /usr/src/linux-source-${kernel_ver}
-          mkdir kern-src
           tar -xf /usr/src/linux-source-${kernel_ver}.tar.bz2
           cd linux-source-${kernel_ver}
-          ls -ahl
           test -f .config || make oldconfig
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
-          ls -ahl ./
-          ls -ahl kern-src
+          ls -ahl
         shell: bash
       - uses: actions/checkout@v4
         with:
