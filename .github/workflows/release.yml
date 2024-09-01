@@ -21,7 +21,7 @@ jobs:
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
-            type $tool && $tool --version || echo 'none?'
+            type $tool && $tool --version && ls -ahl /usr/bin/$tool || echo 'none?'
             [ -f /usr/bin/$tool-14 ] && ls -ahl /usr/bin/$tool-14
             sudo rm -f /usr/bin/$tool
             sudo ln -s /usr/bin/$tool-14 /usr/bin/$tool
@@ -37,8 +37,7 @@ jobs:
           ls -ahl
           test -f .config || make oldconfig
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
-          ls -al ./
-          ls -ahl kern-src
+          ls -ahl
         shell: bash
       - uses: actions/checkout@v4
         with:
