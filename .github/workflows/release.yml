@@ -18,19 +18,25 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes build-essential pkgconf libelf-dev llvm-14 clang-14 linux-tools-common linux-tools-generic gcc gcc-aarch64-linux-gnu linux-source
+          set -x
           for tool in "clang" "llc" "llvm-strip"
           do
+            $tool --version
             sudo rm -f /usr/bin/$tool
             sudo ln -s /usr/bin/$tool-14 /usr/bin/$tool
           done
-          cd /usr/src
-          source_file=$(find . -maxdepth 1 -name "*linux-source*.tar.bz2")
+          set +x
+          #cd /usr/src
+          source_file=$(find /usr/src -maxdepth 1 -name "*linux-source*.tar.bz2")
           source_dir=$(echo "$source_file" | sed 's/\.tar\.bz2//g')  
-          sudo tar -xf $source_file
-          cd $source_dir
-          test -f .config || sudo make oldconfig
-          sudo make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
-          ls -al /usr/src/$source_dir
+          #sudo tar -xf $source_file
+          mkdir kern-src
+          tar -xf $source_file -C kern-src
+          cd kern-src
+          test -f .config || make oldconfig
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
+          ls -al ./
+          ls -ahl kern-src
         shell: bash
       - uses: actions/checkout@v4
         with:
@@ -39,30 +45,16 @@ jobs:
       - name: authenticate
         run: |
           gh auth login --with-token <<<'${{ secrets.GITHUB_TOKEN }}'
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v1
-        with:
-          configuration: "configuration.json"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Write File
-        uses: DamianReeves/write-file-action@v1.2
-        with:
-          path: ./bin/release_notes.txt
-          contents: |
-            ${{ steps.github_release.outputs.changelog }}
-          write-mode: append
       - name: Release amd64
         run: |
           make clean
           make env
-          make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
+          make -f builder/Makefile.release release KERN_SRC_PATH='kern-src' SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
           make clean
           make env
-          CROSS_ARCH=arm64 make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
+          CROSS_ARCH=arm64 make -f builder/Makefile.release release KERN_SRC_PATH='kern-src' SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Publish
         run: |
           make -f builder/Makefile.release publish SNAPSHOT_VERSION=${{ github.ref_name }}
