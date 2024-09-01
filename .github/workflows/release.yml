@@ -35,9 +35,10 @@ jobs:
           # cd /usr/src/linux-source-${kernel_ver}
           tar -xf /usr/src/linux-source-${kernel_ver}.tar.bz2
           cd linux-source-${kernel_ver}
-          test -f .config || yes '' | make oldconfig
+          test -f .config || make oldconfig
+          find -name kconfig.h
           echo ?!
-          yes '' | make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
+          make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
           ls -ahl
         shell: bash
       - uses: actions/checkout@v4
