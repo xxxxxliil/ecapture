@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt-get update
           kernel_ver=`uname -r | cut -d'-' -f 1`
-          sudo apt-get install --yes build-essential pkgconf libelf-dev llvm-14 clang-14 linux-tools-common linux-tools-generic gcc gcc-aarch64-linux-gnu linux-source-${kernel_ver}
+          sudo apt-get install --yes build-essential pkgconf libelf-dev llvm clang linux-tools-common linux-tools-generic gcc gcc-aarch64-linux-gnu linux-source-${kernel_ver}
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
@@ -47,14 +47,15 @@ jobs:
       - name: Release amd64
         run: |
           kernel_ver=`uname -r | cut -d'-' -f 1`
+          find -name kconfig.h
           make clean
-          make env
+          make env KERN_SRC_PATH=linux-source-${kernel_ver}
           make -f builder/Makefile.release release KERN_SRC_PATH=linux-source-${kernel_ver} SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
           kernel_ver=`uname -r | cut -d'-' -f 1`
           make clean
-          make env
+          make env KERN_SRC_PATH=linux-source-${kernel_ver}
           CROSS_ARCH=arm64 make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-${kernel_ver}" SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Publish
         run: |
