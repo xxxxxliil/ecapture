@@ -18,7 +18,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes build-essential pkgconf libelf-dev llvm clang linux-tools-common linux-tools-generic gcc gcc-aarch64-linux-gnu linux-source
-          echo '..................unless op begin'
+          echo '................ nop begin'
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
