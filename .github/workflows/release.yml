@@ -19,7 +19,7 @@ jobs:
           sudo apt-get update
           kernel_ver=`uname -r | cut -d'-' -f 1`
           sudo apt-get install --yes build-essential pkgconf libelf-dev llvm clang linux-tools-common linux-tools-generic gcc gcc-aarch64-linux-gnu linux-source-${kernel_ver}
-          echo '..................unless op begin'
+          echo '................ nop begin'
           set -x
           for tool in "clang" "llc" "llvm-strip"
           do
