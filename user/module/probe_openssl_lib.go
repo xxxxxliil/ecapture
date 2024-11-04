@@ -20,6 +20,7 @@ import (
 	"github.com/gojue/ecapture/user/config"
 	"os"
 	"regexp"
+	"path/filepath"
 	"strings"
 )
 
@@ -148,7 +149,12 @@ func (m *MOpenSSLProbe) initOpensslOffset() {
 }
 
 func (m *MOpenSSLProbe) detectOpenssl(soPath string) error {
-	f, err := os.OpenFile(soPath, os.O_RDONLY, os.ModePerm)
+	soVersionPath := soPath
+	if filepath.Base(soPath) == "libssl.so.3" {
+			soVersionPath = fmt.Sprintf("%s%s", filepath.Dir(soPath), "/libcrypto.so")
+			m.logger.Warn().Str("path", soPath).Msg("ssl3+ read version try from libcrypto.so:")
+	}
+	f, err := os.OpenFile(soVersionPath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("can not open %s, with error:%v", soPath, err)
 	}
