@@ -33,10 +33,9 @@ jobs:
           source_file=$(find /usr/src -maxdepth 1 -name "*linux-source*.tar.bz2")
           source_dir=$(echo "$source_file" | sed 's/\.tar\.bz2//g')  
           #sudo tar -xf $source_file
-          mkdir kern-src
-          echo $source_file
-          tar -xf $source_file -C kern-src
-          cd kern-src
+          src_version=${source_dir%.tar*} ;src_version=${src#*src/}
+          tar -xf $source_file
+          cd $source_file
           ls -ahl
           test -f .config || make oldconfig
           find -name kconfig.h
