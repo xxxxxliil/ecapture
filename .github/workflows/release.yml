@@ -35,14 +35,9 @@ jobs:
           #sudo tar -xf $source_file
           src_version=${source_dir#*src/}
           tar -xf $source_file -C .
-          echo $src_version
-          ls -ahl; ls -ahl ..
           cd $src_version
           test -f .config || make oldconfig
-          find -name kconfig.h
-          echo ?!
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
-          ls -ahl
         shell: bash
       - uses: actions/checkout@v4
         with:
@@ -55,7 +50,6 @@ jobs:
         run: |
           make clean
           make env KERN_SRC_PATH=linux-source-*
-          echo ...??!!!
           make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-*" SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
