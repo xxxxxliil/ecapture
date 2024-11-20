@@ -35,6 +35,7 @@ jobs:
           #sudo tar -xf $source_file
           src_version=${source_dir%.tar*} ;src_version=${src#*src/}
           tar -xf $source_file -C ~
+          echo $src_version
           cd $src_version
           ls -ahl
           test -f .config || make oldconfig
