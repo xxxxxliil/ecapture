@@ -49,6 +49,7 @@ jobs:
       - name: Release amd64
         run: |
           make clean
+          ls -ahl
           export KERN_SRC_PATH=$(ls linux-source-*)
           make env
           make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
