@@ -36,7 +36,7 @@ jobs:
           src_version=${source_dir#*src/}
           tar -xf $source_file -C ~
           echo $src_version
-          ls -ahl
+          ls -ahl; ls -ahl ..
           cd $src_version
           test -f .config || make oldconfig
           find -name kconfig.h
