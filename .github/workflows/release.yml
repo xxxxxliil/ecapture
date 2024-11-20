@@ -34,7 +34,7 @@ jobs:
           source_dir=${source_file%.tar*}
           #sudo tar -xf $source_file
           src_version=${source_dir#*src/}
-          tar -xf $source_file -C ~
+          tar -xf $source_file -C .
           echo $src_version
           ls -ahl; ls -ahl ..
           cd $src_version
