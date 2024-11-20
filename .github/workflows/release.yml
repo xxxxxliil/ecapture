@@ -49,13 +49,15 @@ jobs:
       - name: Release amd64
         run: |
           make clean
-          make env KERN_SRC_PATH=linux-source-*
-          make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-*" SNAPSHOT_VERSION=${{ github.ref_name }}
+          export KERN_SRC_PATH=$(ls linux-source-*)
+          make env
+          make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
           make clean
-          make env KERN_SRC_PATH=linux-source-*
-          CROSS_ARCH=arm64 make -f builder/Makefile.release release KERN_SRC_PATH="linux-source-*" SNAPSHOT_VERSION=${{ github.ref_name }}
+          export KERN_SRC_PATH=$(ls linux-source-*)
+          make env
+          CROSS_ARCH=arm64 make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Publish
         run: |
           make -f builder/Makefile.release publish SNAPSHOT_VERSION=${{ github.ref_name }}
