@@ -34,7 +34,7 @@ jobs:
           source_dir=$(echo "$source_file" | sed 's/\.tar\.bz2//g')  
           #sudo tar -xf $source_file
           mkdir kern-src
-          echo $soure_file
+          echo $source_file
           tar -xf $source_file -C kern-src
           cd kern-src
           ls -ahl
