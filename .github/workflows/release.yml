@@ -31,9 +31,9 @@ jobs:
           echo '..................unless op end'
           #cd /usr/src
           source_file=$(find /usr/src -maxdepth 1 -name "*linux-source*.tar.bz2")
-          source_dir=$(echo "$source_file" | sed 's/\.tar\.bz2//g')  
+          source_dir=${source_file%.tar*}
           #sudo tar -xf $source_file
-          src_version=${source_dir%.tar*} ;src_version=${src#*src/}
+          src_version=${source_dir#*src/}
           tar -xf $source_file -C ~
           echo $src_version
           cd $src_version
