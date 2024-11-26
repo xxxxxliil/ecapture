@@ -38,7 +38,7 @@ jobs:
           cd $src_version
           test -f .config || make oldconfig
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
-          cp -a $srv_version ..
+          cp -a ../$srv_version ../..
         shell: bash
       - uses: actions/checkout@v4
         with:
