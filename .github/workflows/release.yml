@@ -38,7 +38,7 @@ jobs:
           cd $src_version
           test -f .config || make oldconfig
           make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- prepare V=0
-          cp -a ../$srv_version ../..
+          cp -a . ../..
         shell: bash
       - uses: actions/checkout@v4
         with:
@@ -51,13 +51,13 @@ jobs:
         run: |
           make clean
           ls -ahl; ls -ahl ..
-          export KERN_SRC_PATH=$(ls linux-source-*)
+          export KERN_SRC_PATH=$(ls ../linux-source-*)
           make env
           make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Release arm64 (CROSS COMPILATION)
         run: |
           make clean
-          export KERN_SRC_PATH=$(ls linux-source-*)
+          export KERN_SRC_PATH=$(ls ../linux-source-*)
           make env
           CROSS_ARCH=arm64 make -f builder/Makefile.release release SNAPSHOT_VERSION=${{ github.ref_name }}
       - name: Publish
